@@ -48,7 +48,7 @@ export const allCategoriesData = writable<AllCategoriesResponse | null>(null);
 export const categories = writable<Category[]>([]);
 export const categoryApps = writable<App[]>([]);
 export const isLoadingData = writable<boolean>(false);
-export const selectedCategory = writable<string>('');
+export const selectedCategory = writable<string>('All');
 
 // Device interfaces and stores
 interface Device {

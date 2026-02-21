@@ -40,6 +40,10 @@
 		
 		await loadAllData();
 		
+		// Auto-select "All" category and load apps
+		filterAppsForCategory('all', 'All');
+		applications = []; // Clear markdown apps to show category apps
+		
 		// Load saved device from localStorage
 		const savedDevice = localStorage.getItem('selectedDevice');
 		if (savedDevice) {
@@ -54,10 +58,7 @@
 		// Cleanup listener on component destroy
 		return () => {
 			document.removeEventListener('click', handleClickOutside);
-		};		
-		// Auto-select the "All" category by default
-		filterAppsForCategory('all', 'All');
-		applications = []; // Clear markdown apps to show category apps
+		};
 	});
 
 	function filter(categoryName: string, categorySlug: string) {
@@ -351,10 +352,6 @@
 						</div>
 					{/if}
 				</div>
-				
-				<span class="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm font-medium border border-purple-500/30">
-					{$filteredApps.length} available
-				</span>
 			</div>
 		</div>
 	{/if}
