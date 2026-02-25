@@ -64,7 +64,7 @@ static const uint8_t ADC2 = 8;
 #define BAD_TX GROVE_SDA
 #define BAD_RX GROVE_SCL
 
-#define HAS_BTN 0
+#define HAS_BTN 1
 #define BTN_ALIAS "\"Ok\""
 #define BTN_PIN 0
 #define BTN_ACT LOW
@@ -95,32 +95,32 @@ static const uint8_t ADC2 = 8;
 #define FG 3
 
 #define HAS_SCREEN 1
-#define ROTATION 1
+#define ROTATION 4
 #define MINBRIGHT 160
 
 #define USER_SETUP_LOADED 1
 #define USE_HSPI_PORT 1
 #define ST7789_2_DRIVER 1
 #define TFT_RGB_ORDER 1
-#define TFT_WIDTH 135
+#define TFT_WIDTH 240
 #define TFT_HEIGHT 240
 #define TFT_BACKLIGHT_ON 1
-#define TFT_BL 38
-#define TFT_RST 33
-#define TFT_DC 34
-#define TFT_MOSI 35
-#define TFT_SCLK 36
-#define TFT_CS 37
+#define TFT_BL 42
+#define TFT_RST 45
+#define TFT_DC 40
+#define TFT_MOSI 47
+#define TFT_SCLK 21
+#define TFT_CS 41
 #define TOUCH_CS -1
 #define SMOOTH_FONT 1
 #define SPI_FREQUENCY 20000000
 #define SPI_READ_FREQUENCY 20000000
 #define SPI_TOUCH_FREQUENCY 2500000
 
-#define SDCARD_CS 12
-#define SDCARD_SCK 40
-#define SDCARD_MISO 39
-#define SDCARD_MOSI 14
+#define SDCARD_CS 10
+#define SDCARD_SCK 12
+#define SDCARD_MISO 13
+#define SDCARD_MOSI 11
 
 #define GROVE_SDA 2
 #define GROVE_SCL 1
