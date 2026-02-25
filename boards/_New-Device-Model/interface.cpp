@@ -1,12 +1,27 @@
 #include "core/powerSave.h"
 #include <interface.h>
 
+#define BTN_UP   3
+#define BTN_DOWN   8
+#define BTN_LEFT   9
+#define BTN_RIGHT   14
+#define BTN_OK   0
 /***************************************************************************************
 ** Function name: _setup_gpio()
 ** Location: main.cpp
 ** Description:   initial setup for the device
 ***************************************************************************************/
-void _setup_gpio() {}
+void _setup_gpio() { 
+    pinMode(BTN_UP, INPUT_PULLUP);
+    pinMode(BTN_DOWN, INPUT_PULLUP);
+    pinMode(BTN_LEFT, INPUT_PULLUP);
+    pinMode(BTN_RIGHT, INPUT_PULLUP);
+    pinMode(BTN_OK, INPUT_PULLUP);
+
+    // Mặc định cho Bruce biết board này dùng nút bấm
+    bruceConfig.startupApp = "Main Menu"; 
+    Serial.println(F("Bruce Interface: S3 Custom Buttons Initialized (3, 8, 9, 14, 0)"));
+}
 
 /***************************************************************************************
 ** Function name: _post_setup_gpio()
@@ -35,27 +50,49 @@ void _setBrightness(uint8_t brightval) {}
 **********************************************************************/
 void InputHandler(void) {
     checkPowerSaveTime();
+    
+    // Reset trạng thái trước khi quét mới
     PrevPress = false;
     NextPress = false;
-    SelPress = false;
+    SelPress  = false;
     AnyKeyPress = false;
-    EscPress = false;
+    EscPress  = false;
 
-    if (false /*Conditions fot all inputs*/) {
-        if (!wakeUpScreen()) AnyKeyPress = true;
-        else goto END;
+    // 1. Kiểm tra nếu CÓ BẤT KỲ nút nào được nhấn
+    if (digitalRead(BTN_UP) == LOW || digitalRead(BTN_DOWN) == LOW || 
+        digitalRead(BTN_LEFT) == LOW || digitalRead(BTN_RIGHT) == LOW || 
+        digitalRead(BTN_OK) == LOW) 
+    {
+        // Nếu màn hình đang ngủ, nhấn nút bất kỳ để đánh thức
+        if (!wakeUpScreen()) {
+            AnyKeyPress = true;
+        } else {
+            // Nếu vừa tỉnh dậy thì bỏ qua lệnh này để tránh bấm nhầm vào menu
+            goto END;
+        }
     }
-    if (false /*Conditions for previous btn*/) { PrevPress = true; }
-    if (false /*Conditions for Next btn*/) { NextPress = true; }
-    if (false /*Conditions for Esc btn*/) { EscPress = true; }
-    if (false /*Conditions for Select btn*/) { SelPress = true; }
+
+    // 2. Gán lệnh cụ thể cho từng nút (LOW = Đang nhấn)
+    if (digitalRead(BTN_UP) == LOW)    { PrevPress = true; } // Cuộn lên
+    if (digitalRead(BTN_DOWN) == LOW)  { NextPress = true; } // Cuộn xuống
+    if (digitalRead(BTN_LEFT) == LOW)  { EscPress = true;  } // Quay lại / Thoát
+    if (digitalRead(BTN_OK) == LOW)    { SelPress = true;  } // Chọn / Enter
+    if (digitalRead(BTN_RIGHT) == LOW) { NextPress = true; } // Sang phải (map vào Next cho tiện)
+
 END:
-    if (AnyKeyPress) {
+    // 3. Chống dội phím (Debounce) và đợi nhả phím
+    if (AnyKeyPress || PrevPress || NextPress || SelPress || EscPress) {
         long tmp = millis();
-        while ((millis() - tmp) < 200 && false /*Conditions fot all inputs*/);
+        // Đợi phím được nhả ra hoặc tối đa 200ms để không bị trượt menu quá nhanh
+        while ((millis() - tmp) < 200 && (
+            digitalRead(BTN_UP) == LOW || digitalRead(BTN_DOWN) == LOW || 
+            digitalRead(BTN_LEFT) == LOW || digitalRead(BTN_RIGHT) == LOW || 
+            digitalRead(BTN_OK) == LOW
+        )) {
+            yield(); // Giúp ESP32 không bị Watchdog Reset
+        }
     }
 }
-
 /*********************************************************************
 ** Function: keyboard
 ** location: mykeyboard.cpp
